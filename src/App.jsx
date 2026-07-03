@@ -13,6 +13,8 @@ import WaliKelasLaporan from './components/WaliKelasLaporan'
 import AdminDashboard from './components/AdminDashboard'
 import AdminSiswa from './components/AdminSiswa'
 import AdminKurikulum from './components/AdminKurikulum'
+import AdminPenempatan from './components/AdminPenempatan'
+import { connectSocket, disconnectSocket } from './api/socket'
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -22,18 +24,24 @@ export default function App() {
   useEffect(() => {
     const stored = sessionStorage.getItem('absensi_user')
     if (stored) {
-      try { setUser(JSON.parse(stored)) } catch { sessionStorage.removeItem('absensi_user') }
+      try {
+        const u = JSON.parse(stored)
+        setUser(u)
+        if (u.token) connectSocket(u.token)
+      } catch { sessionStorage.removeItem('absensi_user') }
     }
   }, [])
 
   const handleLogin = (userData) => {
     setUser(userData)
     sessionStorage.setItem('absensi_user', JSON.stringify(userData))
+    if (userData.token) connectSocket(userData.token)
     navigate(getDefaultPath(userData.role))
   }
 
   const handleLogout = () => {
     setUser(null)
+    disconnectSocket()
     sessionStorage.removeItem('absensi_user')
     navigate('/login')
   }
@@ -58,6 +66,7 @@ export default function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/siswa" element={<AdminSiswa />} />
           <Route path="/admin/kurikulum" element={<AdminKurikulum />} />
+          <Route path="/admin/penempatan" element={<AdminPenempatan />} />
           <Route path="*" element={<Navigate to={getDefaultPath(user.role)} replace />} />
         </Routes>
       </div>

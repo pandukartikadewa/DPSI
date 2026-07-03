@@ -25,6 +25,7 @@ const menuByRole = {
     { to: '/admin', label: 'Kelola Akun Pengguna', icon: '👤' },
     { to: '/admin/siswa', label: 'Data Siswa & Kelas', icon: '👨‍🎓' },
     { to: '/admin/kurikulum', label: 'Kurikulum & Mapel', icon: '📚' },
+    { to: '/admin/penempatan', label: 'Penempatan Guru', icon: '📋' },
   ],
 }
 

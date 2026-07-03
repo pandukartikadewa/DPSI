@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { fetchStatistikKelas, fetchKelas } from '../api'
+import { getSocket } from '../api/socket'
 
 export default function WaliKelasDashboard({ user }) {
   const [kelasId, setKelasId] = useState(user.waliKelas || '')
@@ -9,12 +10,22 @@ export default function WaliKelasDashboard({ user }) {
 
   useEffect(() => { fetchKelas().then(setKelas) }, [])
 
-  useEffect(() => {
-    if (kelasId) {
-      setLoading(true)
-      fetchStatistikKelas(kelasId).then(setStat).finally(() => setLoading(false))
-    }
+  const loadStat = useCallback(async () => {
+    if (!kelasId) return
+    setLoading(true)
+    try { setStat(await fetchStatistikKelas(kelasId)) } finally { setLoading(false) }
   }, [kelasId])
+
+  useEffect(() => { loadStat() }, [loadStat])
+
+  useEffect(() => {
+    const socket = getSocket()
+    if (!socket) return
+    const handler = () => { if (kelasId) loadStat() }
+    socket.on('presensi:baru', handler)
+    socket.on('presensi:update', handler)
+    return () => { socket.off('presensi:baru', handler); socket.off('presensi:update', handler) }
+  }, [loadStat, kelasId])
 
   return (
     <div>

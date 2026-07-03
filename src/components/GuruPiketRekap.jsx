@@ -1,11 +1,26 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { fetchRekapKelas } from '../api'
+import { getSocket } from '../api/socket'
 
 export default function GuruPiketRekap() {
   const [rekap, setRekap] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => { fetchRekapKelas().then(d => { setRekap(d); setLoading(false) }) }, [])
+  const loadData = useCallback(async () => {
+    setLoading(true)
+    try { setRekap(await fetchRekapKelas()) } finally { setLoading(false) }
+  }, [])
+
+  useEffect(() => { loadData() }, [loadData])
+
+  useEffect(() => {
+    const socket = getSocket()
+    if (!socket) return
+    const handler = () => loadData()
+    socket.on('presensi:baru', handler)
+    socket.on('presensi:update', handler)
+    return () => { socket.off('presensi:baru', handler); socket.off('presensi:update', handler) }
+  }, [loadData])
 
   function exportCSV() {
     const header = 'Kelas,Total Siswa,Hadir,Sakit,Izin,Alpa,Belum\n'
@@ -45,8 +60,6 @@ export default function GuruPiketRekap() {
     w.document.close()
   }
 
-  if (loading) return <div className="loading-state">Memuat...</div>
-
   return (
     <div>
       <div className="flex items-start justify-between mb-4">
@@ -57,32 +70,36 @@ export default function GuruPiketRekap() {
         </div>
       </div>
 
-      <div className="card">
-        <h2 className="mb-3">Rekap Harian — {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</h2>
-        <div className="overflow-x-auto">
-          <table>
-            <thead>
-              <tr><th>Kelas</th><th>Total Siswa</th><th>Hadir</th><th>Sakit</th><th>Izin</th><th>Alpa</th><th>Belum</th></tr>
-            </thead>
-            <tbody>
-              {rekap.map(r => (
-                <tr key={r.kelasId}>
-                  <td><strong>{r.namaKelas}</strong></td>
-                  <td>{r.totalSiswa}</td>
-                  <td><span className="badge badge-hadir">{r.hadir}</span></td>
-                  <td><span className="badge badge-sakit">{r.sakit}</span></td>
-                  <td><span className="badge badge-izin">{r.izin}</span></td>
-                  <td><span className="badge badge-alpa">{r.alpa}</span></td>
-                  <td>{r.belum}</td>
-                </tr>
-              ))}
-              {rekap.length === 0 && (
-                <tr><td colSpan={7}><div className="empty-state"><p>Belum ada data</p></div></td></tr>
-              )}
-            </tbody>
-          </table>
+      {loading ? (
+        <div className="loading-state">Memuat...</div>
+      ) : (
+        <div className="card">
+          <h2 className="mb-3">Rekap Harian — {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</h2>
+          <div className="overflow-x-auto">
+            <table>
+              <thead>
+                <tr><th>Kelas</th><th>Total Siswa</th><th>Hadir</th><th>Sakit</th><th>Izin</th><th>Alpa</th><th>Belum</th></tr>
+              </thead>
+              <tbody>
+                {rekap.map(r => (
+                  <tr key={r.kelasId}>
+                    <td><strong>{r.namaKelas}</strong></td>
+                    <td>{r.totalSiswa}</td>
+                    <td><span className="badge badge-hadir">{r.hadir}</span></td>
+                    <td><span className="badge badge-sakit">{r.sakit}</span></td>
+                    <td><span className="badge badge-izin">{r.izin}</span></td>
+                    <td><span className="badge badge-alpa">{r.alpa}</span></td>
+                    <td>{r.belum}</td>
+                  </tr>
+                ))}
+                {rekap.length === 0 && (
+                  <tr><td colSpan={7}><div className="empty-state"><p>Belum ada data</p></div></td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

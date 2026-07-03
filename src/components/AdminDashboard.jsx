@@ -1,5 +1,28 @@
 import { useState, useEffect } from 'react'
-import { fetchUsers, saveUserList, fetchKelas, fetchMapel } from '../api'
+import { fetchUsers, fetchKelas, fetchMapel } from '../api'
+
+const API = import.meta.env.VITE_API_URL || '/api'
+
+function getToken() {
+  try {
+    const u = sessionStorage.getItem('absensi_user')
+    if (!u) return null
+    const user = JSON.parse(u)
+    return user.token || null
+  } catch { return null }
+}
+
+async function api(method, path, body = null) {
+  const headers = { 'Content-Type': 'application/json' }
+  const token = getToken()
+  if (token) headers['Authorization'] = `Bearer ${token}`
+  const opts = { method, headers }
+  if (body) opts.body = JSON.stringify(body)
+  const res = await fetch(`${API}${path}`, opts)
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Request failed')
+  return data
+}
 
 const ROLE_OPTIONS = [
   { value: 'guru_mapel', label: 'Guru Mapel' },
@@ -30,25 +53,28 @@ export default function AdminDashboard() {
 
   async function handleSave() {
     if (!form.username || !form.name) return
-    let updated
-    if (editing) {
-      const existing = list.find(l => l.id === editing)
-      updated = list.map(l => l.id === editing ? { ...l, ...form, password: form.password || existing.password } : l)
-    } else {
-      if (!form.password) { alert('Password wajib diisi'); return }
-      if (list.some(l => l.username === form.username)) { alert('Username sudah ada'); return }
-      updated = [...list, { ...form, id: Date.now() }]
+    try {
+      if (editing) {
+        await api('PUT', `/users/${editing}`, { name: form.name, role: form.role, mapel: form.mapel, waliKelas: form.waliKelas, password: form.password || undefined })
+      } else {
+        if (!form.password) { alert('Password wajib diisi'); return }
+        await api('POST', '/users', { username: form.username, password: form.password, name: form.name, role: form.role, mapel: form.mapel, waliKelas: form.waliKelas })
+      }
+      setList(await fetchUsers())
+      resetForm()
+    } catch (err) {
+      alert(err.message)
     }
-    await saveUserList(updated)
-    setList(updated)
-    resetForm()
   }
 
   async function handleDelete(id) {
     if (!confirm('Hapus pengguna ini?')) return
-    const updated = list.filter(l => l.id !== id)
-    await saveUserList(updated)
-    setList(updated)
+    try {
+      await api('DELETE', `/users/${id}`)
+      setList(await fetchUsers())
+    } catch (err) {
+      alert(err.message)
+    }
   }
 
   return (

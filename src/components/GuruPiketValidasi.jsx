@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { fetchPresensiWithFoto, fetchKelas } from '../api'
+import { getSocket } from '../api/socket'
 
 export default function GuruPiketValidasi() {
   const [records, setRecords] = useState([])
@@ -11,18 +12,32 @@ export default function GuruPiketValidasi() {
 
   useEffect(() => { fetchKelas().then(setKelas) }, [])
 
-  useEffect(() => {
+  const loadData = useCallback(async () => {
     setLoading(true)
-    fetchPresensiWithFoto({ kelasId: filterKelas || undefined, tanggal: filterTanggal || undefined })
-      .then(setRecords)
-      .finally(() => setLoading(false))
+    try {
+      const data = await fetchPresensiWithFoto({ kelasId: filterKelas || undefined, tanggal: filterTanggal || undefined })
+      setRecords(data)
+    } finally { setLoading(false) }
   }, [filterKelas, filterTanggal])
+
+  useEffect(() => { loadData() }, [loadData])
+
+  useEffect(() => {
+    const socket = getSocket()
+    if (!socket) return
+    const handler = () => loadData()
+    socket.on('presensi:baru', handler)
+    socket.on('presensi:update', handler)
+    return () => { socket.off('presensi:baru', handler); socket.off('presensi:update', handler) }
+  }, [loadData])
 
   return (
     <div>
       <div className="flex items-start justify-between mb-4">
         <h1>Log Validasi Bukti</h1>
-        <span className="text-gray-400 text-xs">Review foto yang diunggah Guru Mapel</span>
+        <span className={`text-xs ${records.length > 0 ? 'text-emerald-600' : 'text-gray-400'}`}>
+          {records.length} data
+        </span>
       </div>
 
       <div className="card">

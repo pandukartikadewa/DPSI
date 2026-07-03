@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { login } from '../api'
 import { resetData } from '../data/mockData'
+import logo from '../assets/matsayo.png'
 
 const ROLE_OPTIONS = [
   { value: 'guru_mapel', label: 'Guru Mapel' },
@@ -36,10 +37,8 @@ export default function Login({ onLogin }) {
       <div className="w-full max-w-[400px] bg-white rounded-2xl shadow-2xl px-8 py-10">
         {/* Logo + Title */}
         <div className="text-center mb-8">
-          <div className="mx-auto mb-4 w-14 h-14 bg-[#10B981] rounded-2xl flex items-center justify-center shadow-lg shadow-[#10B981]/20">
-            <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+          <div className="mx-auto mb-4 w-16 h-16 flex items-center justify-center">
+            <img src={logo} alt="MTsN 1 Yogyakarta" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-lg font-bold text-gray-900">Absensi Digital</h1>
           <p className="text-sm font-medium text-gray-500 mt-0.5">MTsN 1 Yogyakarta</p>

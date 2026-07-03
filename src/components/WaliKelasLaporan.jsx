@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fetchKelas, fetchRekapSiswa, fetchStatistikKelas, fetchSiswa } from '../api'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts'
+import { getSocket } from '../api/socket'
 
 const NAV_ITEMS = [
   { key: 'beranda', label: 'Beranda', path: '/wali-kelas', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
@@ -24,19 +25,31 @@ export default function WaliKelasLaporan({ user }) {
 
   useEffect(() => { fetchKelas().then(setKelas) }, [])
 
-  useEffect(() => {
+  const loadData = useCallback(async () => {
     if (!kelasId) return
     setLoading(true)
-    Promise.all([
-      fetchStatistikKelas(kelasId),
-      fetchRekapSiswa(kelasId),
-      fetchSiswa(),
-    ]).then(([s, r, sw]) => {
+    try {
+      const [s, r, sw] = await Promise.all([
+        fetchStatistikKelas(kelasId),
+        fetchRekapSiswa(kelasId),
+        fetchSiswa(),
+      ])
       setStat(s)
       setRekap(r)
       setSemuaSiswa(sw.filter(s => s.kelasId === kelasId))
-    }).finally(() => setLoading(false))
+    } finally { setLoading(false) }
   }, [kelasId])
+
+  useEffect(() => { loadData() }, [loadData])
+
+  useEffect(() => {
+    const socket = getSocket()
+    if (!socket) return
+    const handler = () => { if (kelasId) loadData() }
+    socket.on('presensi:baru', handler)
+    socket.on('presensi:update', handler)
+    return () => { socket.off('presensi:baru', handler); socket.off('presensi:update', handler) }
+  }, [loadData, kelasId])
 
   const donutData = stat ? [
     { name: 'Hadir', value: stat.totalHadir, pct: stat.pctHadir },
@@ -79,7 +92,6 @@ export default function WaliKelasLaporan({ user }) {
 
   return (
     <div className="pb-24">
-      {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Laporan Presensi</h1>
@@ -87,15 +99,12 @@ export default function WaliKelasLaporan({ user }) {
             {user.waliKelas ? `Kelas ${kelasNama} – Semester Genap` : 'Pilih kelas'}
           </p>
           <p className="text-xs text-gray-400 mt-0.5">
-            Periode Laporan: 1 Mei – 31 Mei 2024
+            {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long' })}
           </p>
         </div>
         {!user.waliKelas && (
-          <select
-            value={kelasId}
-            onChange={e => setKelasId(e.target.value)}
-            className="px-3 py-2 text-xs border border-gray-200 rounded-xl bg-gray-50 text-gray-700 focus:outline-none focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/20"
-          >
+          <select value={kelasId} onChange={e => setKelasId(e.target.value)}
+            className="px-3 py-2 text-xs border border-gray-200 rounded-xl bg-gray-50 text-gray-700 focus:outline-none focus:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/20">
             <option value="">Pilih Kelas</option>
             {kelas.map(k => <option key={k.id} value={k.id}>{k.nama}</option>)}
           </select>
@@ -106,40 +115,20 @@ export default function WaliKelasLaporan({ user }) {
         <div className="flex items-center justify-center py-16 text-xs text-gray-400">Memuat data...</div>
       ) : stat ? (
         <>
-          {/* Donut Chart */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
             <h2 className="text-sm font-bold text-gray-800 tracking-wide mb-4">Distribusi Kehadiran</h2>
             <div className="flex flex-col sm:flex-row items-center gap-6">
               <div className="w-48 h-48 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie
-                      data={donutData}
-                      cx="50%" cy="50%"
-                      innerRadius={55}
-                      outerRadius={80}
-                      paddingAngle={3}
-                      dataKey="value"
-                    >
-                      {donutData.map(entry => (
-                        <Cell key={entry.name} fill={COLORS[entry.name]} />
-                      ))}
+                    <Pie data={donutData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={3} dataKey="value">
+                      {donutData.map(entry => (<Cell key={entry.name} fill={COLORS[entry.name]} />))}
                     </Pie>
-                    <Legend
-                      verticalAlign="middle"
-                      align="right"
-                      layout="vertical"
-                      iconType="circle"
-                      iconSize={8}
+                    <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" iconSize={8}
                       formatter={(value) => {
                         const d = donutData.find(item => item.name === value)
-                        return (
-                          <span className="text-xs text-gray-600">
-                            {value} ({d?.pct || 0}%)
-                          </span>
-                        )
-                      }}
-                    />
+                        return (<span className="text-xs text-gray-600">{value} ({d?.pct || 0}%)</span>)
+                      }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -154,14 +143,10 @@ export default function WaliKelasLaporan({ user }) {
             </div>
           </div>
 
-          {/* Student Detail Section */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-bold text-gray-800 tracking-wide">Detail Siswa ({rekap.length})</h2>
-              <button
-                onClick={() => setShowAll(!showAll)}
-                className="text-xs font-semibold text-[#10B981] hover:underline"
-              >
+              <button onClick={() => setShowAll(!showAll)} className="text-xs font-semibold text-[#10B981] hover:underline">
                 {showAll ? 'Tampilkan Sedikit' : 'Lihat Semua'}
               </button>
             </div>
@@ -180,9 +165,7 @@ export default function WaliKelasLaporan({ user }) {
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-sm font-bold" style={{ color: COLORS.Hadir }}>{pct}%</p>
-                      <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                        r.alpa > 0 ? 'bg-red-50 text-red-500' : 'bg-gray-100 text-gray-400'
-                      }`}>
+                      <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full ${r.alpa > 0 ? 'bg-red-50 text-red-500' : 'bg-gray-100 text-gray-400'}`}>
                         Alpa: {r.alpa}
                       </span>
                     </div>
@@ -195,14 +178,11 @@ export default function WaliKelasLaporan({ user }) {
             </div>
           </div>
 
-          {/* Download Button */}
-          <button
-            onClick={exportPDF}
+          <button onClick={exportPDF}
             className="w-full py-3.5 text-sm font-semibold text-white rounded-xl transition-all duration-150 hover:shadow-lg flex items-center justify-center gap-2"
             style={{ backgroundColor: '#10B981' }}
             onMouseEnter={e => e.currentTarget.style.backgroundColor = '#059669'}
-            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#10B981'}
-          >
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#10B981'}>
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
@@ -215,17 +195,11 @@ export default function WaliKelasLaporan({ user }) {
         </div>
       )}
 
-      {/* Bottom Navigation */}
       <nav className="bottom-nav">
         <div className="bottom-nav-inner">
           {NAV_ITEMS.map(item => (
-            <button
-              key={item.key}
-              onClick={() => { setNavActive(item.key); navigate(item.path) }}
-              className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-colors ${
-                navActive === item.key ? 'text-[#10B981]' : 'text-gray-400'
-              }`}
-            >
+            <button key={item.key} onClick={() => { setNavActive(item.key); navigate(item.path) }}
+              className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-colors ${navActive === item.key ? 'text-[#10B981]' : 'text-gray-400'}`}>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={navActive === item.key ? 2.5 : 1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
               </svg>
