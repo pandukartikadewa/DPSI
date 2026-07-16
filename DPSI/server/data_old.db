@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL, password TEXT NOT NULL, name TEXT NOT NULL, role TEXT NOT NULL, mapel TEXT, waliKelas TEXT, createdAt TEXT DEFAULT (datetime('now','localtime')));
+CREATE TABLE IF NOT EXISTS kelas (id TEXT PRIMARY KEY, tingkat TEXT NOT NULL, nama TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS mapel (id INTEGER PRIMARY KEY AUTOINCREMENT, nama TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS siswa (id INTEGER PRIMARY KEY AUTOINCREMENT, nis TEXT NOT NULL, nama TEXT NOT NULL, kelasId TEXT NOT NULL, FOREIGN KEY (kelasId) REFERENCES kelas(id));
+CREATE TABLE IF NOT EXISTS presensi (id INTEGER PRIMARY KEY AUTOINCREMENT, tanggal TEXT NOT NULL, jam TEXT NOT NULL, tingkat TEXT NOT NULL, kelasId TEXT NOT NULL, mapelId INTEGER NOT NULL, siswaId INTEGER NOT NULL, status TEXT NOT NULL, foto TEXT, timestamp TEXT DEFAULT (datetime('now','localtime')), userId INTEGER);
+CREATE TABLE IF NOT EXISTS penempatan_guru (id INTEGER PRIMARY KEY AUTOINCREMENT, guruId INTEGER NOT NULL, mapelId INTEGER NOT NULL, kelasId TEXT NOT NULL, tahunAjaran TEXT NOT NULL, createdAt TEXT DEFAULT (datetime('now','localtime')), UNIQUE(guruId, mapelId, kelasId, tahunAjaran));
+INSERT INTO users VALUES(1,'guru.mapel','$2a$10$dummy','Ahmad','guru_mapel','Matematika',NULL,'2025-01-01');
+INSERT INTO users VALUES(4,'admin','$2a$10$dummy','Admin','admin',NULL,NULL,'2025-01-01');
+INSERT INTO kelas VALUES('7A','7','7A');
+INSERT INTO mapel VALUES(1,'Matematika');
+INSERT INTO penempatan_guru VALUES(1,1,1,'7A','2025/2026','2025-01-01');
