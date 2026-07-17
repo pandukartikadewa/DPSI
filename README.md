@@ -12,6 +12,16 @@ Aplikasi berbasis web untuk pencatatan kehadiran siswa secara real-time di MTsN 
 | 4 | M. Raihan Najwa | 2400016052 |
 | 5 | Pandu Kartika Dewa | 2400016053 |
 
+## Pembagian Tugas
+
+| No | Nama | Tugas |
+|----|------|-------|
+| 1 | Moh Dzikry Pradana | Tidak ada kontribusi |
+| 2 | Jhoyce Augusthia Rhaffael | Tidak ada kontribusi |
+| 3 | Kesya Aletta Arizona | Membuat dokumen SOT, Frontend, dan Backend |
+| 4 | M. Raihan Najwa | Deploy aplikasi dan Integrasi dengan backend |
+| 5 | Pandu Kartika Dewa | Membuat dokumen SOT, Frontend, dan Backend |
+
 ## Teknologi yang Digunakan
 
 ### Frontend
@@ -94,5 +104,7 @@ Aplikasi berbasis web untuk pencatatan kehadiran siswa secara real-time di MTsN 
 - Role Admin dapat membuat user baru
 
 ## URL Aplikasi 
+proyek-akhir-dpsi-eight.vercel.app 
 
 ## URL Repository Github
+https://github.com/pandukartikadewa/DPSI 
