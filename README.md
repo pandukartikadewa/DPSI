@@ -55,6 +55,7 @@ Aplikasi berbasis web untuk pencatatan kehadiran siswa secara real-time di MTsN 
    ```bash
    git clone https://github.com/pandukartikadewa/DPSI.git
    cd DPSI
+   cd DPSI
    ```
 
 2. **Install dependensi frontend**
@@ -64,10 +65,8 @@ Aplikasi berbasis web untuk pencatatan kehadiran siswa secara real-time di MTsN 
 
 3. **Install dependensi backend**
    ```bash
-   cd DPSI
    cd server
    npm install
-   cd ..
    ```
 
 4. **Jalankan backend**
