@@ -72,7 +72,7 @@ Aplikasi berbasis web untuk pencatatan kehadiran siswa secara real-time di MTsN 
    ```
    Aplikasi frontend berjalan di `http://localhost:3000`.
 
-6. **Login**
+6. **Login Akun Demo**
    Gunakan kredensial berikut untuk mengakses aplikasi:
 
    | Role | Username | Password |
