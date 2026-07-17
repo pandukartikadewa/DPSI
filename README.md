@@ -90,3 +90,4 @@ Aplikasi berbasis web untuk pencatatan kehadiran siswa secara real-time di MTsN 
 - Rekap dan statistik kehadiran per kelas/siswa
 - Penempatan guru mapel ke kelas berdasarkan tahun ajaran
 - CRUD data master (user, siswa, kelas, mapel)
+- Role Admin dapat membuat user baru
