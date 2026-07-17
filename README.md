@@ -2,6 +2,16 @@
 
 Aplikasi berbasis web untuk pencatatan kehadiran siswa secara real-time di MTsN 1 Yogyakarta. Guru Mapel mengisi presensi per kelas dengan bukti foto via webcam, Guru Piket memonitor dan memvalidasi langsung, Wali Kelas melihat rekap dan statistik siswa binaan, serta Admin mengelola seluruh data master (user, kelas, mapel, penempatan guru per tahun ajaran). Semua pembaruan masuk secara live melalui WebSocket tanpa perlu refresh halaman.
 
+## Anggota Kelompok
+
+| No | Nama | NIM |
+|----|------|-----|
+| 1 | Moh Dzikry Pradana | 2300016137 |
+| 2 | Jhoyce Augusthia Rhaffael | 2300016157 |
+| 3 | Kesya Aletta Arizona | 2400016051 |
+| 4 | M. Raihan Najwa | 2400016052 |
+| 5 | Pandu Kartika Dewa | 2400016053 |
+
 ## Teknologi yang Digunakan
 
 ### Frontend
