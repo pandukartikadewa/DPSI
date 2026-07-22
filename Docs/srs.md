@@ -46,7 +46,6 @@ Dokumen ini mendefinisikan spesifikasi kebutuhan perangkat lunak untuk Sistem Ab
 
 | Stakeholder | Role | Responsibility |
 | --- | --- | --- |
-| Administrasi Madrasah (Bapak Atok) | Project Sponsor / Narasumber | Memberikan arahan kebutuhan bisnis berdasarkan hasil wawancara dan menyetujui hasil akhir sistem. |
 | Guru Mata Pelajaran (Mapel) | End User | Melakukan pencatatan kehadiran siswa secara langsung di setiap jam pelajaran/pertemuan. |
 | Guru Piket | End User | Memantau keterisian absensi harian dari seluruh kelas secara terpusat dan melakukan rekapitulasi otomatis. |
 | Wali Kelas | End User | Memantau statistik kehadiran kelas binaannya serta mencetak laporan periodik sebagai lampiran buku rapor. |
