@@ -16,8 +16,8 @@ Aplikasi berbasis web untuk pencatatan kehadiran siswa secara real-time di MTsN 
 
 | No | Nama | Tugas |
 |----|------|-------|
-| 1 | Moh Dzikry Pradana | Tidak ada kontribusi |
-| 2 | Jhoyce Augusthia Rhaffael | Tidak ada kontribusi |
+| 1 | Moh Dzikry Pradana | - |
+| 2 | Jhoyce Augusthia Rhaffael | - |
 | 3 | Kesya Aletta Arizona | Membuat dokumen SOT, Frontend, dan Backend |
 | 4 | M. Raihan Najwa | Deploy aplikasi dan Integrasi dengan backend |
 | 5 | Pandu Kartika Dewa | Membuat dokumen SOT, Frontend, dan Backend |
@@ -54,8 +54,7 @@ Aplikasi berbasis web untuk pencatatan kehadiran siswa secara real-time di MTsN 
 1. **Clone repositori**
    ```bash
    git clone https://github.com/pandukartikadewa/DPSI.git
-   cd DPSI
-   cd DPSI
+   cd DPSI
    ```
 
 2. **Install dependensi frontend**
