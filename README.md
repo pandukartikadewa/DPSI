@@ -20,7 +20,7 @@ Aplikasi berbasis web untuk pencatatan kehadiran siswa secara real-time di MTsN 
 | 2 | Jhoyce Augusthia Rhaffael | - |
 | 3 | Kesya Aletta Arizona | Membuat dokumen SOT, Frontend, dan Backend |
 | 4 | M. Raihan Najwa | Membuat dokumen SPT, Deploy aplikasi dan Integrasi dengan backend |
-| 5 | Pandu Kartika Dewa | Membuat dokumen SOT, Frontend |
+| 5 | Pandu Kartika Dewa | Membuat dokumen SOT dan Frontend |
 
 ## Teknologi yang Digunakan
 
