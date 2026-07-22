@@ -93,13 +93,12 @@ Aplikasi berbasis web untuk pencatatan kehadiran siswa secara real-time di MTsN 
 
 ## Fitur Utama
 
-- Autentikasi dengan 4 level role (Admin, Guru Mapel, Guru Piket, Wali Kelas)
-- Presensi siswa dengan bukti foto via webcam
-- Real-time monitoring dan validasi oleh Guru Piket
-- Rekap dan statistik kehadiran per kelas/siswa
-- Penempatan guru mapel ke kelas berdasarkan tahun ajaran
-- CRUD data master (user, siswa, kelas, mapel)
-- Role Admin dapat membuat user baru
+- Autentikasi & Manajemen Sesi
+- Pencatatan Presensi
+- Validasi Foto (Face Recognition Sederhana)
+- Rekapitulasi Otomatis Terpusat
+- Manajemen Data Master 
+- Pelaporan & Filter Laporan Akhir
 
 ## URL Aplikasi 
 proyek-akhir-dpsi-eight.vercel.app 
