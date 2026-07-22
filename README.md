@@ -16,8 +16,8 @@ Aplikasi berbasis web untuk pencatatan kehadiran siswa secara real-time di MTsN 
 
 | No | Nama | Tugas |
 |----|------|-------|
-| 1 | Moh Dzikry Pradana | - |
-| 2 | Jhoyce Augusthia Rhaffael | - |
+| 1 | Moh Dzikry Pradana | Membuat dokumen SOT |
+| 2 | Jhoyce Augusthia Rhaffael | Membuat dokumen SOT |
 | 3 | Kesya Aletta Arizona | Membuat dokumen SOT, Frontend, dan Backend |
 | 4 | M. Raihan Najwa | Membuat dokumen SPT, Deploy aplikasi dan Integrasi dengan backend |
 | 5 | Pandu Kartika Dewa | Membuat dokumen SOT dan Frontend |
